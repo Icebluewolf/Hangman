@@ -1,0 +1,260 @@
+import random
+#  ☹ frown face and 😶 no mouth for copying
+HANGMAN_PICS_HARD = ['''
+ +---+
+    |
+    |
+    |
+   ===''', '''
+ +---+
+ O  |
+    |
+    |
+   ===''', '''
+ +---+
+ O  |
+ |  |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|  |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+/   |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+/ \ |
+   ===''']
+
+HANGMAN_PICS = ['''
+ +---+
+    |
+    |
+    |
+   ===''', '''
+ +---+
+ O  |
+    |
+    |
+   ===''', '''
+ +---+
+ O  |
+ |  |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|  |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+/   |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+/ \ |
+   ===''', '''
+  +---+
+ [O  |
+ /|\ |
+ / \ |
+    ===''', '''
+  +---+
+ [O] |
+ /|\ |
+ / \ |
+    ===''']
+
+HANGMAN_PICS_EASY = ['''
+ +---+
+    |
+    |
+    |
+   ===''', '''
+ +---+
+ O  |
+    |
+    |
+   ===''', '''
+ +---+
+ O  |
+ |  |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|  |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+    |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+/   |
+   ===''', '''
+ +---+
+ O  |
+/|\ |
+/ \ |
+   ===''', '''
+  +---+
+ [O  |
+ /|\ |
+ / \ |
+    ===''', '''
+  +---+
+ [O] |
+ /|\ |
+ / \ |
+    ===''', '''
+  +---+
+ [😶]|
+ /|\ |
+ / \ |
+    ===''', '''
+  +---+
+ [☹] |
+ /|\ |
+ / \ |
+    ===''']
+words = 'beam game mars mate reef tied tide diet hide echo hole cafe fire exit rice teen four zero five nine life huge home door reed roof tree race face maze lace bat pen six tub peg pig log rat egg pin rod sun jam men pod cup map leg mop rug can web bib cot bus elf wig ox bun ham ink dot gum pad den cod mud rag bin rod ant baboon badger bear beaver camel cat clam cobra cougar coyote crow deer dog donkey duck eagle ferret fox frog goat goose hawk lion lizard llama mole monkey mouse moose mule newt otter owl panda parrot pigeon python rabbit ram raven rhino salmon seal shark sheep skunk sloth snake spider stork swan tiger toad trout turkey turtle weasel whale wolf wombat zebra'.split()
+
+
+def getRandomWord(wordList):
+                # this function returns a random string from the passed list of strings.#
+    wordIndex = random.randint(0, len(wordList)-1)
+    return wordList[wordIndex]
+
+def displayBoard(missedLetters, correctLetters, secretWord):
+    print(easyOrHardAns [len(missedLetters)])
+    print()
+
+    print('Missed Letters:', end='')
+    for letter in missedLetters:
+        print(letter, end='')
+    print()
+
+    blanks = '_'*len(secretWord)
+
+    for i in range(len(secretWord)):  # replace blanks correctly guessed letters
+        if secretWord[i] in correctLetters:
+            blanks = blanks[:i] + secretWord[i] + blanks[i + 1:]
+
+    for letter in blanks:  # Show the secret word with spaces in between each letter.
+        print(letter, end='')
+    print()
+
+def getGuess(alreadyGuessed):
+    # returns the letter the player entered. this function makes sure the player entered a single letter and not somthing else.
+    while True:
+        print('Guess A Letter.')
+        guess = input()
+        guess = guess.lower()
+        if len(guess) != 1:
+            print('Please Enter A Single Letter.')
+        elif guess in alreadyGuessed:
+            print('You Have Already Guessed This Letter. Choose Again.')
+        elif guess not in 'abcdefghijklmnopqrstuvwxyz':
+            print('Please Enter A LETTER')
+        else:
+            return guess
+
+def playAgain():
+    # This function returns TRUE if the player wants to play again; otherwise, it returns FALSE.
+    print('Do You Want To Play Again? (Yes Or No)')
+    return input().lower().startswith('y')
+
+
+#**********************************************
+#********************* LOOP *******************
+#**********************************************
+
+print('H A N G M A N')
+print('Do you want to play Easy, Normal, or Hard?')
+difficulty = 0
+while True:
+    easyOrHard = input()
+    if easyOrHard.lower().startswith('e'):
+        easyOrHardAns = HANGMAN_PICS_EASY
+        break
+    elif easyOrHard.lower().startswith('h'):
+        easyOrHardAns = HANGMAN_PICS_HARD
+        break
+    elif easyOrHard.lower().startswith('n'):
+        easyOrHardAns = HANGMAN_PICS
+        break
+    elif easyOrHard.lower().startswith('') != ('n' or 'h' or 'e'):
+        print('Do you want to play Easy, Normal, or Hard?')
+missedLetters =''
+correctLetters =''
+secretWord = getRandomWord(words)
+gameIsDone = False
+while True:
+    displayBoard(missedLetters, correctLetters, secretWord)
+
+    # let the player enter a letter
+    guess = getGuess(missedLetters + correctLetters)
+
+    if guess in secretWord:
+        correctLetters = correctLetters + guess
+
+        # Check if the player has won
+        foundAllLetters = True
+        for i in range(len(secretWord)):
+            if secretWord[i] not in correctLetters:
+                foundAllLetters = False
+                break
+        if foundAllLetters:
+            print('Yes! The Secret Word Is "' + secretWord + '"! You Have Won!')
+            gameIsDone = True
+    else:
+        missedLetters = missedLetters + guess
+
+        # check if player has guessed to many times and lost.
+        if len(missedLetters) == len(easyOrHardAns) - 1:
+            displayBoard(missedLetters, correctLetters, secretWord)
+            print('You Have Run Out Of Guesses!\nAfter ' + str(len(missedLetters)) + ' Missed Guesses And ' + str(len(correctLetters)) + ' Correct Guesses, The Word Was ' + secretWord + '')
+            gameIsDone = True
+
+        # Ask The Player If They Want To Play Again ( But Only If The Game Is Done).
+    if gameIsDone:
+        if playAgain():
+            missedLetters = ''
+            correctLetters = ''
+            gameIsDone = False
+            secretWord = getRandomWord(words)
+
+            # ask player if they want to play easy or hard after restarting
+            print('Do You Want To Play Easy, Normal, Or Hard?')
+            easyOrHard = input()
+            if easyOrHard.lower().startswith('e'):
+                easyOrHard = HANGMAN_PICS
+            else:
+                easyOrHard = HANGMAN_PICS_HARD
+
+        else:
+            print('Thanks For Playing')
+            break
